@@ -23,11 +23,25 @@ const ROOM_KEY = 'grumble.room';
 const HOST_POLL_MS = 1500;
 const PLAYER_POLL_MS = 4000;
 
+/**
+ * Keeps only https://xxxx.supabase.co from whatever was pasted into the
+ * secret. The Supabase dashboard also shows longer addresses such as
+ * https://xxxx.supabase.co/rest/v1/ that break sign-in if used as is.
+ */
+export function projectUrl(raw: string): string {
+  const text = String(raw ?? '').trim().replace(/^["']|["']$/g, '');
+  try {
+    return new URL(text.includes('://') ? text : `https://${text}`).origin;
+  } catch {
+    return text;
+  }
+}
+
 let client: SupabaseClient | null = null;
 let signedIn: Promise<void> | null = null;
 
 function db(): SupabaseClient {
-  client ??= createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY, {
+  client ??= createClient(projectUrl(import.meta.env.VITE_SUPABASE_URL), String(import.meta.env.VITE_SUPABASE_ANON_KEY).trim(), {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false },
   });
   return client;
@@ -94,6 +108,9 @@ export function explainError(err: unknown): string {
   }
   if (m.includes('could not find the function') || m.includes('pgrst202') || m.includes('schema cache')) {
     return 'The database is not set up yet. Run the SQL file supabase/migrations/20261117000000_init.sql in the Supabase SQL Editor.';
+  }
+  if (m.includes('invalid path specified')) {
+    return 'The Supabase address is wrong. Set the VITE_SUPABASE_URL secret to just https://your-project.supabase.co with nothing after it, then redeploy.';
   }
   if (m.includes('rate limit')) {
     return 'Too many sign-ins from this network. In Supabase, raise the anonymous sign-in rate limit, then try again.';
