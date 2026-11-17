@@ -33,6 +33,14 @@ Edit `public/content.json`. No code changes are needed. The quiz needs exactly
 four options per question and the Grumble-o-meter needs exactly five scale
 labels. Set `secondsPerQuestion` to `0` to turn the countdown off.
 
+Each scenario can be plain text, or text with a short label. The short label
+is what the summary screen shows, because the full text is too long to fit
+there. Leave `short` out and the summary shows the start of the full text.
+
+```json
+{ "text": "Someone who left church for 20 years comes back...", "short": "The returning churchgoer" }
+```
+
 ## Layout
 
 ```

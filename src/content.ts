@@ -7,6 +7,12 @@ export interface QuizQuestion {
   correct: number;
 }
 
+export interface Scenario {
+  text: string;
+  /** Optional short name for the summary screen, where the full text will not fit. */
+  short?: string;
+}
+
 export interface Content {
   title: string;
   passage: string;
@@ -17,7 +23,7 @@ export interface Content {
   grumble: {
     intro: string;
     scale: string[];
-    scenarios: string[];
+    scenarios: Scenario[];
   };
 }
 
@@ -41,6 +47,19 @@ function strList(v: unknown, where: string): string[] {
 function obj(v: unknown, where: string): Record<string, unknown> {
   if (typeof v !== 'object' || v === null || Array.isArray(v)) fail(`${where} must be an object`);
   return v as Record<string, unknown>;
+}
+
+/** A scenario is either plain text, or { "text": "...", "short": "..." }. */
+function scenarioList(v: unknown): Scenario[] {
+  if (!Array.isArray(v)) fail('grumble.scenarios must be a list');
+  return v.map((item, i) => {
+    const where = `grumble.scenarios[${i}]`;
+    if (typeof item === 'string') return { text: str(item, where) };
+    const o = obj(item, where);
+    const scenario: Scenario = { text: str(o.text, `${where}.text`) };
+    if (o.short !== undefined && o.short !== '') scenario.short = str(o.short, `${where}.short`);
+    return scenario;
+  });
 }
 
 export function validateContent(raw: unknown): Content {
@@ -76,7 +95,7 @@ export function validateContent(raw: unknown): Content {
     grumble: {
       intro: str(grumble.intro, 'grumble.intro'),
       scale,
-      scenarios: strList(grumble.scenarios, 'grumble.scenarios'),
+      scenarios: scenarioList(grumble.scenarios),
     },
   };
 }

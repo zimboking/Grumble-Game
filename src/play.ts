@@ -159,7 +159,7 @@ export function mountPlay(
         : 'How would you honestly feel?';
     return [
       h('p', { class: 'anon-banner' }, 'Your answers here are anonymous.'),
-      h('h1', { class: 'phone-scenario' }, scenario),
+      h('h1', { class: 'phone-scenario' }, scenario.text),
       h(
         'div',
         { class: 'taps', role: 'group', 'aria-label': 'Your answer' },

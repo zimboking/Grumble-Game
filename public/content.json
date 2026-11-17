@@ -46,11 +46,26 @@
       "Honestly, I'd grumble"
     ],
     "scenarios": [
-      "A colleague who did you over in a deal becomes a Christian. Six months later he's asked to give his testimony at church.",
-      "A neighbour who fought your renovation through council joins your Bible study.",
-      "Someone who left church for 20 years comes back and everyone makes a fuss of them. You've been on the roster the whole time.",
-      "A celebrity famous for outrageous behaviour announces they've found Jesus.",
-      "The ex-partner who hurt your adult child comes to faith."
+      {
+        "text": "A colleague who did you over in a deal becomes a Christian. Six months later he's asked to give his testimony at church.",
+        "short": "The colleague's testimony"
+      },
+      {
+        "text": "A neighbour who fought your renovation through council joins your Bible study.",
+        "short": "The neighbour in your study"
+      },
+      {
+        "text": "Someone who left church for 20 years comes back and everyone makes a fuss of them. You've been on the roster the whole time.",
+        "short": "The returning churchgoer"
+      },
+      {
+        "text": "A celebrity famous for outrageous behaviour announces they've found Jesus.",
+        "short": "The celebrity convert"
+      },
+      {
+        "text": "The ex-partner who hurt your adult child comes to faith.",
+        "short": "Your child's ex-partner"
+      }
     ]
   }
 }

@@ -221,7 +221,7 @@ export function mountHost(root: HTMLElement, content: Content, backend: HostBack
       'section',
       { class: `screen grumble${step.revealed ? ' is-revealed' : ''}` },
       h('p', { class: 'kicker' }, `Grumble-o-meter · ${step.idx + 1} of ${content.grumble.scenarios.length}`),
-      h('h1', { class: 'question scenario' }, scenario),
+      h('h1', { class: 'question scenario' }, scenario.text),
       s.counts
         ? scaleChart(content.grumble.scale, s.counts)
         : h('div', { class: 'waiting' }, progressLine('voted'), h('p', { class: 'muted' }, content.grumble.intro)),
@@ -243,7 +243,11 @@ export function mountHost(root: HTMLElement, content: Content, backend: HostBack
             'li',
             null,
             h('span', { class: 'summary-rank' }, i + 1),
-            h('span', { class: 'summary-text' }, content.grumble.scenarios[row.idx]),
+            h(
+              'span',
+              { class: 'summary-text', title: content.grumble.scenarios[row.idx].text },
+              content.grumble.scenarios[row.idx].short ?? content.grumble.scenarios[row.idx].text,
+            ),
             h(
               'span',
               { class: 'chart-track', 'aria-hidden': 'true' },
