@@ -218,8 +218,17 @@ export function mountPlay(
     main.replaceChildren(...screenFor(s));
   }
 
-  backend.subscribe((s) => {
-    current = s;
-    render();
-  });
+  const errorBar = h('p', { class: 'error-bar', role: 'alert', hidden: true });
+  root.prepend(errorBar);
+
+  backend.subscribe(
+    (s) => {
+      current = s;
+      render();
+    },
+    (message) => {
+      errorBar.hidden = !message;
+      errorBar.textContent = message ? `Can't connect. ${current ? 'Retrying...' : message}` : '';
+    },
+  );
 }

@@ -58,7 +58,7 @@ export interface PlayerSnapshot {
 export type JoinResult = { ok: true } | { ok: false; error: string };
 
 export interface HostBackend {
-  subscribe(cb: (snap: HostSnapshot) => void): () => void;
+  subscribe(cb: (snap: HostSnapshot) => void, onError?: (message: string | null) => void): () => void;
   createRoom(): Promise<void>;
   goTo(step: Step): Promise<void>;
   reveal(): Promise<void>;
@@ -66,7 +66,7 @@ export interface HostBackend {
 }
 
 export interface PlayerBackend {
-  subscribe(cb: (snap: PlayerSnapshot) => void): () => void;
+  subscribe(cb: (snap: PlayerSnapshot) => void, onError?: (message: string | null) => void): () => void;
   join(code: string, nickname: string): Promise<JoinResult>;
   answerQuiz(option: number): Promise<void>;
   voteGrumble(value: number): Promise<void>;

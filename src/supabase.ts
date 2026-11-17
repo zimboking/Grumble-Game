@@ -82,7 +82,34 @@ function toRoom(r: RoomJson | null): RoomState | null {
  * `roomCode` says which room to listen to; the channel follows it, so joining
  * a room (or the room ending) rewires the subscription.
  */
-function live(refresh: () => Promise<void>, pollMs: number, roomCode: () => string): () => void {
+/** Turns a raw error into a sentence that says what to fix. */
+export function explainError(err: unknown): string {
+  const raw = err instanceof Error ? err.message : String(err);
+  const m = raw.toLowerCase();
+  if (m.includes('anonymous sign-ins are disabled') || m.includes('anonymous_provider_disabled')) {
+    return 'Anonymous sign-ins are turned off. In Supabase, go to Authentication, Sign In / Providers, and turn on Allow anonymous sign-ins.';
+  }
+  if (m.includes('invalid api key') || m.includes('no api key') || m.includes('jwt') || m.includes('unauthorized')) {
+    return 'Supabase did not accept the key. Check the VITE_SUPABASE_ANON_KEY secret in GitHub is the anon or publishable key, then redeploy.';
+  }
+  if (m.includes('could not find the function') || m.includes('pgrst202') || m.includes('schema cache')) {
+    return 'The database is not set up yet. Run the SQL file supabase/migrations/20261117000000_init.sql in the Supabase SQL Editor.';
+  }
+  if (m.includes('rate limit')) {
+    return 'Too many sign-ins from this network. In Supabase, raise the anonymous sign-in rate limit, then try again.';
+  }
+  if (m.includes('failed to fetch') || m.includes('networkerror') || m.includes('load failed')) {
+    return 'Cannot reach Supabase. Check the internet connection, check the VITE_SUPABASE_URL secret, and check the Supabase project is not paused.';
+  }
+  return raw;
+}
+
+function live(
+  refresh: () => Promise<void>,
+  pollMs: number,
+  roomCode: () => string,
+  onError: (message: string | null) => void = () => {},
+): () => void {
   let stopped = false;
   let running = false;
   let again = false;
@@ -98,8 +125,10 @@ function live(refresh: () => Promise<void>, pollMs: number, roomCode: () => stri
     running = true;
     try {
       await refresh();
+      onError(null);
     } catch (err) {
       console.warn('Refresh failed, will retry', err);
+      onError(explainError(err));
     }
     running = false;
     wire();
@@ -176,14 +205,16 @@ export function createSupabaseHostBackend(content: Content): HostBackend {
   }
 
   return {
-    subscribe(cb) {
+    subscribe(cb, onError) {
       const refresh = async () => cb(await fetchSnapshot());
       // Any action by the host refreshes straight away.
       poke = () => void refresh().catch(() => {});
-      return live(refresh, HOST_POLL_MS, () => code);
+      return live(refresh, HOST_POLL_MS, () => code, onError);
     },
     async createRoom() {
-      await rpc('create_room');
+      await rpc('create_room').catch((err) => {
+        throw new Error(explainError(err));
+      });
       poke();
     },
     async goTo(step: Step) {
@@ -245,10 +276,10 @@ export function createSupabasePlayerBackend(roomFromUrl: string): PlayerBackend 
   }
 
   return {
-    subscribe(cb) {
+    subscribe(cb, onError) {
       const refresh = async () => cb(await fetchSnapshot());
       poke = () => void refresh().catch(() => {});
-      return live(refresh, PLAYER_POLL_MS, () => (code.length === 4 ? code : ''));
+      return live(refresh, PLAYER_POLL_MS, () => (code.length === 4 ? code : ''), onError);
     },
 
     async join(roomCode: string, nickname: string): Promise<JoinResult> {

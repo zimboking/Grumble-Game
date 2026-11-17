@@ -36,7 +36,12 @@ export function mountHost(root: HTMLElement, content: Content, backend: HostBack
 
   // ---- Fixed frame: top bar, main screen, control bar ----
   const joinHint = h('p', { class: 'join-hint' });
-  const main = h('main', { class: 'host-main', id: 'screen', 'aria-live': 'polite' });
+  const main = h(
+    'main',
+    { class: 'host-main', id: 'screen', 'aria-live': 'polite' },
+    h('section', { class: 'screen screen-center' }, h('p', { class: 'lede' }, 'Connecting...')),
+  );
+  const errorBar = h('p', { class: 'error-bar', role: 'alert', hidden: true });
 
   const backBtn = h('button', { type: 'button', class: 'btn', onclick: () => act('back') }, 'Back');
   const primaryBtn = h('button', { type: 'button', class: 'btn btn-primary', onclick: () => act('primary') });
@@ -68,6 +73,7 @@ export function mountHost(root: HTMLElement, content: Content, backend: HostBack
       h('p', { class: 'brand' }, h('strong', null, content.title), ' ', h('span', null, content.passage)),
       joinHint,
     ),
+    errorBar,
     main,
     controls,
     qrDialog,
@@ -346,5 +352,9 @@ export function mountHost(root: HTMLElement, content: Content, backend: HostBack
     ];
   }
 
-  backend.subscribe(update);
+  controls.hidden = true;
+  backend.subscribe(update, (message) => {
+    errorBar.hidden = !message;
+    errorBar.textContent = message ? `Problem: ${message}` : '';
+  });
 }
