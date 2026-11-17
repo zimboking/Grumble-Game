@@ -4,7 +4,6 @@
 //   /?room=ABCD       also the phone view (this is what the QR code points to)
 
 import { loadContent } from './content';
-import { createFakeHostBackend, createFakePlayerBackend } from './fake-backend';
 import { mountHost } from './host';
 import { mountPlay } from './play';
 import { h } from './ui/dom';
@@ -19,9 +18,18 @@ async function start(): Promise<void> {
 
   try {
     const content = await loadContent();
-    // Step 1 uses pretend data. The Supabase backend replaces these two lines.
-    if (path === 'host') mountHost(app, content, createFakeHostBackend(content));
-    else mountPlay(app, content, createFakePlayerBackend(), room);
+    // With Supabase keys in the build this is the real game. Without them it
+    // runs in demo mode on pretend data, which is handy for trying out content.
+    const live = Boolean(import.meta.env.VITE_SUPABASE_URL && import.meta.env.VITE_SUPABASE_ANON_KEY);
+    if (live) {
+      const real = await import('./supabase');
+      if (path === 'host') mountHost(app, content, real.createSupabaseHostBackend(content), false);
+      else mountPlay(app, content, real.createSupabasePlayerBackend(room), room);
+    } else {
+      const fake = await import('./fake-backend');
+      if (path === 'host') mountHost(app, content, fake.createFakeHostBackend(content), true);
+      else mountPlay(app, content, fake.createFakePlayerBackend(), room);
+    }
   } catch (err) {
     app.replaceChildren(
       h(

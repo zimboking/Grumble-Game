@@ -121,6 +121,9 @@ html.host-mode { font-size: calc(min(1vw, 1.7778vh) * 2.5); }
 .btn-big { font-size: 1.25rem; margin-top: 0.5rem; }
 select.btn { padding-right: 0.6em; }
 
+.demo-note, #start-error { font-size: 0.75rem; }
+#start-error:empty { display: none; }
+
 /* Lobby */
 .lobby { display: grid; grid-template-columns: auto 1fr; gap: 1.6rem; align-items: center; }
 .join-panel { display: flex; gap: 1.2rem; align-items: center; }

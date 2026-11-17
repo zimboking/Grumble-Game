@@ -16,7 +16,7 @@ export function mountPlay(
   document.documentElement.classList.add('play-mode');
   document.title = content.title;
 
-  const main = h('main', { class: 'phone' });
+  const main = h('main', { class: 'phone' }, h('p', { class: 'boot' }, 'Connecting...'));
   root.replaceChildren(main);
 
   let lastKey = '';

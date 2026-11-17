@@ -27,7 +27,7 @@ export function rankPlayers(players: PlayerRow[]): Array<PlayerRow & { place: nu
   });
 }
 
-export function mountHost(root: HTMLElement, content: Content, backend: HostBackend): void {
+export function mountHost(root: HTMLElement, content: Content, backend: HostBackend, demo: boolean): void {
   document.documentElement.classList.add('host-mode');
   document.title = `${content.title} · Host`;
 
@@ -130,9 +130,16 @@ export function mountHost(root: HTMLElement, content: Content, backend: HostBack
       h('p', { class: 'lede' }, content.passage),
       h(
         'button',
-        { type: 'button', class: 'btn btn-primary btn-big', onclick: () => backend.createRoom() },
+        { type: 'button', class: 'btn btn-primary btn-big', onclick: () =>
+            backend.createRoom().catch((err: unknown) => {
+              const box = document.getElementById('start-error');
+              if (box) box.textContent = `Could not start: ${err instanceof Error ? err.message : err}`;
+            }),
+        },
         'Start session',
       ),
+      demo && h('p', { class: 'muted demo-note' }, 'Demo mode: pretend players, nothing is saved.'),
+      h('p', { class: 'error', role: 'alert', id: 'start-error' }),
     );
   }
 
