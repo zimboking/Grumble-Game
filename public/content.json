@@ -1,0 +1,56 @@
+{
+  "title": "Rejoice With Me",
+  "passage": "Luke 15:1-10",
+  "quiz": {
+    "secondsPerQuestion": 20,
+    "questions": [
+      {
+        "prompt": "Why were the Pharisees and scribes grumbling? (v2)",
+        "options": [
+          "Jesus healed on the Sabbath",
+          "Jesus welcomed sinners and ate with them",
+          "Jesus did not wash before the meal",
+          "Jesus taught in the temple courts"
+        ],
+        "correct": 1
+      },
+      {
+        "prompt": "What does the shepherd do when he finds the sheep? (v5)",
+        "options": [
+          "Leads it back to the flock with a rope",
+          "Scolds it and keeps it penned",
+          "Puts it on his shoulders, rejoicing",
+          "Sells it at the market"
+        ],
+        "correct": 2
+      },
+      {
+        "prompt": "Who does the woman call together when she finds the coin? (v9)",
+        "options": [
+          "The priests",
+          "Her husband's family",
+          "The tax collectors",
+          "Her friends and neighbours"
+        ],
+        "correct": 3
+      }
+    ]
+  },
+  "grumble": {
+    "intro": "Be honest. Nobody can see your answer.",
+    "scale": [
+      "Party time",
+      "Glad",
+      "Mixed",
+      "Struggling",
+      "Honestly, I'd grumble"
+    ],
+    "scenarios": [
+      "A colleague who did you over in a deal becomes a Christian. Six months later he's asked to give his testimony at church.",
+      "A neighbour who fought your renovation through council joins your Bible study.",
+      "Someone who left church for 20 years comes back and everyone makes a fuss of them. You've been on the roster the whole time.",
+      "A celebrity famous for outrageous behaviour announces they've found Jesus.",
+      "The ex-partner who hurt your adult child comes to faith."
+    ]
+  }
+}
